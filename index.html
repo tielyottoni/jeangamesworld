@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jogos Zerados</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+  <button onclick="adicionarJogoNormal()" style="color: #F0F8FF;">Adicionar Jogo</button>
+  <button onclick="adicionarJogoPlatina()" style="color: #F0F8FF;">Adicionar Jogo com Platina</button>
+  <button onclick="excluirUltimaLinha()" style="color: #FF0000;">Excluir Última Linha</button>
+  <button onclick="desfazerExclusao()" style="color: #7FFFD4;">Desfazer</button><br>
+  
+  <input type="text" id="texto" placeholder="Digite o nome do jogo">
+  <table id="tabela">
+    <tbody id="corpo-tabela">
+      <tr bgcolor="#00FFFF">
+        <td align="center" valign="center" height="40" colspan="2"><font face="Comic Sans MS" size="5"><b>Jogos Zerados</b></font></td>
+      </tr>
+    </tbody>
+  </table>
+<script>
+
+ var sequencia = 1;
+  var ultimaLinhaExcluida;
+  var ultimaClasse;
+  var dadosTabela = [];
+  var ultimasLinhasExcluidas = [];
+
+  function adicionarLinha(numero, texto) {
+    var tabela = document.getElementById("tabela");
+    var corpoTabela = document.getElementById("corpo-tabela");
+    var novaLinha = document.createElement("tr");
+
+    var linhasExistentes = corpoTabela.getElementsByTagName("tr").length;
+    var novaClasse = linhasExistentes % 2 === 0 ? "linha-par" : "linha-impar";
+
+    novaLinha.className = novaClasse;
+
+    var novaCelula1 = document.createElement("td");
+    novaCelula1.innerHTML = numero;
+    novaCelula1.classList.add("numero-sequencial");
+    var novaCelula2 = document.createElement("td");
+    novaCelula2.innerHTML = texto;
+    novaLinha.appendChild(novaCelula1);
+    novaLinha.appendChild(novaCelula2);
+    corpoTabela.appendChild(novaLinha);
+
+    ultimaClasse = novaClasse;
+    atualizarSequencia();
+    dadosTabela.push({ numero: numero, texto: texto });
+    atualizarArmazenamentoLocal();
+  }
+
+  function adicionarJogoNormal() {
+    var textoInput = document.getElementById("texto");
+    var texto = textoInput.value;
+
+    if (texto !== "") {
+      adicionarLinha(sequencia, texto);
+      textoInput.value = "";
+      sequencia++;
+    }
+  }
+
+  function adicionarJogoPlatina() {
+    var textoInput = document.getElementById("texto");
+    var texto = textoInput.value;
+
+    if (texto !== "") {
+      adicionarLinha(sequencia, texto + " 🏆");
+      textoInput.value = "";
+      sequencia++;
+    }
+  }
+
+ function excluirUltimaLinha() {
+    var tabela = document.getElementById("tabela");
+    var corpoTabela = document.getElementById("corpo-tabela");
+    var ultimaLinha = corpoTabela.lastElementChild;
+
+    if (ultimaLinha) {
+      corpoTabela.removeChild(ultimaLinha);
+      ultimasLinhasExcluidas.push(ultimaLinha.cloneNode(true));
+      atualizarSequencia();
+      atualizarArmazenamentoLocal();
+    }
+  }
+
+  function desfazerExclusao() {
+    var tabela = document.getElementById("tabela");
+    var corpoTabela = document.getElementById("corpo-tabela");
+
+    if (ultimasLinhasExcluidas.length > 0) {
+      var ultimaLinhaExcluida = ultimasLinhasExcluidas.pop();
+
+      var linhasExistentes = corpoTabela.getElementsByTagName("tr").length;
+      var novaClasse = linhasExistentes % 2 === 0 ? "linha-par" : "linha-impar";
+
+      corpoTabela.appendChild(ultimaLinhaExcluida);
+      ultimaLinhaExcluida.className = novaClasse;
+      atualizarArmazenamentoLocal();
+    }
+  }
+
+  function atualizarSequencia() {
+    var numerosSequenciais = document.getElementsByClassName("numero-sequencial");
+    sequencia = 1;
+
+    for (var i = 0; i < numerosSequenciais.length; i++) {
+      numerosSequenciais[i].innerHTML = sequencia;
+
+      var linha = numerosSequenciais[i].parentNode;
+      var novaClasse = sequencia % 2 === 0 ? "linha-par" : "linha-impar";
+      linha.className = novaClasse;
+
+      sequencia++;
+    }
+    atualizarArmazenamentoLocal();
+  }
+
+  function salvarTabela() {
+    var tabela = document.getElementById("tabela");
+    var corpoTabela = document.getElementById("corpo-tabela");
+
+    var linhasExistentes = corpoTabela.getElementsByTagName("tr");
+
+    for (var i = linhasExistentes.length - 1; i >= 0; i--) {
+      var linhaExistente = linhasExistentes[i];
+      var numero = linhaExistente.getElementsByClassName("numero-sequencial")[0].innerHTML;
+      var texto = linhaExistente.getElementsByTagName("td")[1].innerHTML;
+      var linhaExisteNosDados = dadosTabela.some(function (dados) {
+        return dados.numero === numero && dados.texto === texto;
+      });
+      if (!linhaExisteNosDados) {
+        corpoTabela.removeChild(linhaExistente);
+      }
+    }
+
+    for (var j = 0; j < dadosTabela.length; j++) {
+      var dados = dadosTabela[j];
+      var numero = dados.numero;
+      var texto = dados.texto;
+      var linhaExisteNaTabela = Array.from(linhasExistentes).some(function (linhaExistente) {
+        var numeroExistente = linhaExistente.getElementsByClassName("numero-sequencial")[0].innerHTML;
+        var textoExistente = linhaExistente.getElementsByTagName("td")[1].innerHTML;
+        return numeroExistente === numero && textoExistente === texto;
+      });
+      if (!linhaExisteNaTabela) {
+        adicionarLinha(numero, texto);
+      }
+    }
+    atualizarArmazenamentoLocal();
+  }
+
+function atualizarArmazenamentoLocal() {
+    localStorage.setItem("dadosTabela", JSON.stringify(dadosTabela));
+    localStorage.setItem("sequencia", sequencia);
+    localStorage.setItem("ultimasLinhasExcluidas", JSON.stringify(ultimasLinhasExcluidas));
+  }
+
+  function carregarDadosArmazenados() {
+    var dadosArmazenados = localStorage.getItem("dadosTabela");
+    var sequenciaArmazenada = localStorage.getItem("sequencia");
+    var ultimasLinhasExcluidasArmazenadas = localStorage.getItem("ultimasLinhasExcluidas");
+
+    if (dadosArmazenados) {
+      dadosTabela = JSON.parse(dadosArmazenados);
+      sequencia = parseInt(sequenciaArmazenada) || 1;
+      ultimasLinhasExcluidas = JSON.parse(ultimasLinhasExcluidasArmazenadas) || [];
+
+      for (var i = 0; i < dadosTabela.length; i++) {
+        var dados = dadosTabela[i];
+        adicionarLinha(dados.numero, dados.texto);
+      }
+    }
+  }
+
+  carregarDadosArmazenados();
+</script>
+</body>
+</html>

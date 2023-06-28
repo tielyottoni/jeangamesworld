@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Jogos Zerados</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <input type="text" id="texto" placeholder="Digite o nome do jogo">
+  <button onclick="adicionarJogo()">Adicionar Jogo</button>
+  <button onclick="salvarDados()">Salvar</button>
+  <table id="tabela">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Jogo</th>
+      </tr>
+    </thead>
+    <tbody id="corpo-tabela">
+    </tbody>
+  </table>
+
+  <script>
+    var sequencia = 1;
+    var dadosTabela = [];
+
+    function adicionarJogo() {
+      var textoInput = document.getElementById("texto");
+      var texto = textoInput.value;
+
+      if (texto !== "") {
+        adicionarLinha(sequencia, texto);
+        textoInput.value = "";
+        sequencia++;
+      }
+    }
+
+    function adicionarLinha(numero, texto) {
+      var corpoTabela = document.getElementById("corpo-tabela");
+      var novaLinha = document.createElement("tr");
+      var novaCelulaNumero = document.createElement("td");
+      var novaCelulaTexto = document.createElement("td");
+
+      novaCelulaNumero.textContent = numero;
+      novaCelulaTexto.textContent = texto;
+
+      novaLinha.appendChild(novaCelulaNumero);
+      novaLinha.appendChild(novaCelulaTexto);
+      corpoTabela.appendChild(novaLinha);
+
+      // Salvar os dados na matriz dadosTabela
+      dadosTabela.push({ numero: numero, texto: texto });
+    }
+
+    function salvarDados() {
+      // Salvar os dados no LocalStorage como uma string JSON
+      localStorage.setItem("dadosTabela", JSON.stringify(dadosTabela));
+    }
+
+    function carregarDados() {
+      var dadosArmazenados = localStorage.getItem("dadosTabela");
+
+      if (dadosArmazenados) {
+        dadosTabela = JSON.parse(dadosArmazenados);
+
+        for (var i = 0; i < dadosTabela.length; i++) {
+          var dados = dadosTabela[i];
+          adicionarLinha(dados.numero, dados.texto);
+          sequencia++;
+        }
+      }
+    }
+
+    // Carregar dados da tabela ao carregar a página
+    carregarDados();
+  </script>
+</body>
+</html>
