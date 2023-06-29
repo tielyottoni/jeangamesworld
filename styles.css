@@ -1,78 +1,90 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Jogos Zerados</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
-  <input type="text" id="texto" placeholder="Digite o nome do jogo">
-  <button onclick="adicionarJogo()">Adicionar Jogo</button>
-  <button onclick="salvarDados()">Salvar</button>
-  <table id="tabela">
-    <thead>
-      <tr>
-        <th>Número</th>
-        <th>Jogo</th>
-      </tr>
-    </thead>
-    <tbody id="corpo-tabela">
-    </tbody>
-  </table>
+body {
+  position: relative;
+  min-height: 100vh;
+}
 
-  <script>
-    var sequencia = 1;
-    var dadosTabela = [];
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://cdn2.tfx.company/images/clickwallpapers-free-download-the-last-of-us-2-4K-wallpaper-5.jpg'); /* Substitua pelo caminho da sua imagem de fundo */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.4; /* Valor de transparência da imagem (varia de 0 a 1) */
+  z-index: -1; /* Certifica-se de que a imagem de fundo fique atrás do conteúdo */
+}
 
-    function adicionarJogo() {
-      var textoInput = document.getElementById("texto");
-      var texto = textoInput.value;
+.container {
+  max-width: 800px; /* Define a largura máxima do conteúdo */
+  margin: 0 auto; /* Centraliza horizontalmente o conteúdo */
+  padding: 20px; /* Adiciona um espaçamento interno */
+  background-color: rgba(255, 255, 255, 0.8); /* Define uma cor de fundo com transparência */
+  border-radius: 10px; /* Adiciona bordas arredondadas */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra */
+  color: #000000; /* Define a cor do texto */
+  font-size: 16px; /* Define o tamanho da fonte */
+  text-align: left; /* Centraliza o texto horizontalmente */
+}
 
-      if (texto !== "") {
-        adicionarLinha(sequencia, texto);
-        textoInput.value = "";
-        sequencia++;
-      }
-    }
+input[type="text"] {
+  width: 38%;
+  padding: 7px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
 
-    function adicionarLinha(numero, texto) {
-      var corpoTabela = document.getElementById("corpo-tabela");
-      var novaLinha = document.createElement("tr");
-      var novaCelulaNumero = document.createElement("td");
-      var novaCelulaTexto = document.createElement("td");
+table {
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: 1300px;
+  width: 30%;
+  opacity: 1;
+}
 
-      novaCelulaNumero.textContent = numero;
-      novaCelulaTexto.textContent = texto;
+th, td {
+  border: 1px solid black;
+  padding: 3px;
+  text-align: center;
+  opacity: 1;
+}
 
-      novaLinha.appendChild(novaCelulaNumero);
-      novaLinha.appendChild(novaCelulaTexto);
-      corpoTabela.appendChild(novaLinha);
+th {
+  background-color: #ddd;
+  font-weight: bold;
+  opacity: 1;
+}
 
-      // Salvar os dados na matriz dadosTabela
-      dadosTabela.push({ numero: numero, texto: texto });
-    }
+.linha-par {
+  background-color: #ddd;
+  opacity: 1;
+}
 
-    function salvarDados() {
-      // Salvar os dados no LocalStorage como uma string JSON
-      localStorage.setItem("dadosTabela", JSON.stringify(dadosTabela));
-    }
+.linha-impar {
+  background-color: #1E90FF;
+  opacity: 1;
+}
 
-    function carregarDados() {
-      var dadosArmazenados = localStorage.getItem("dadosTabela");
+button {
+  background-color: #363636; /* cor verde escura */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 1;
+}
+button:hover {
+  background-color: #00BFFF; /* cor verde escura mais escura */
+}
+a {
+  color: black;
+}
 
-      if (dadosArmazenados) {
-        dadosTabela = JSON.parse(dadosArmazenados);
-
-        for (var i = 0; i < dadosTabela.length; i++) {
-          var dados = dadosTabela[i];
-          adicionarLinha(dados.numero, dados.texto);
-          sequencia++;
-        }
-      }
-    }
-
-    // Carregar dados da tabela ao carregar a página
-    carregarDados();
-  </script>
-</body>
-</html>
+a:hover {
+  color: #00BFFF;
